@@ -9,11 +9,11 @@ header('X-Content-Type-Options: nosniff');
 
 /* ── CONFIGURACIÓN DE BASE DE DATOS (Neon / Vercel) ──────── */
 // Reemplaza los valores con tus credenciales de Neon
-define('DB_HOST',     getenv('PGHOST')     ?: 'ep-xxxx-xxxx.us-east-1.aws.neon.tech');
+define('DB_HOST',     getenv('PGHOST')     ?: 'ep-old-rain-anx76mf7-pooler.c-6.us-east-1.aws.neon.tech');
 define('DB_PORT',     getenv('PGPORT')     ?: '5432');
-define('DB_NAME',     getenv('PGDATABASE') ?: 'maindb_web');
-define('DB_USER',     getenv('PGUSER')     ?: 'db_user');
-define('DB_PASSWORD', getenv('PGPASSWORD') ?: 'tu_password_aqui');
+define('DB_NAME',     getenv('PGDATABASE') ?: 'maindb');
+define('DB_USER',     getenv('PGUSER')     ?: 'neon_owner');
+define('DB_PASSWORD', getenv('PGPASSWORD') ?: 'npg_jOgItXdAhu69');
 define('DB_SSLMODE',  'require');
 
 /* ── FUNCIÓN: Conexión PDO ──────────────────────────────── */
