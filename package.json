@@ -2,7 +2,6 @@
   "name": "nexus-tech",
   "version": "1.0.0",
   "description": "NEXUS TECH — Tecnología, IA y Marketing Digital",
-  "type": "module",
   "dependencies": {
     "@neondatabase/serverless": "^0.9.0"
   }
