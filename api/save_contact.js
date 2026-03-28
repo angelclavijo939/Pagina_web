@@ -46,7 +46,7 @@ export default async function handler(req, res) {
   const db_port = process.env.DB_PORT || '5432';
   const db_name = process.env.DB_NAME || 'maindb';
   const db_user = process.env.DB_USER || 'neondb_owner';
-  const db_pass = process.env.DB_PASS || 'npg_jOgItXdAhu69';
+  const db_pass = process.env.DB_PASS || 'npg_5xpTMBZqg3sj';
 
   if (!db_host || !db_user || !db_pass || !db_name) {
     return res.status(500).json({
