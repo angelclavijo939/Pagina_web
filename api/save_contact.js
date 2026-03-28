@@ -1,13 +1,11 @@
 // ============================================================
 //  NEXUS TECH — API Route para Vercel (Serverless Function)
 //  Archivo: /api/save_contact.js
-//  Variables de entorno: DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
 // ============================================================
 
-import { neon } from '@neondatabase/serverless';
+const { neon } = require('@neondatabase/serverless');
 
-export default async function handler(req, res) {
-  // CORS
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -17,22 +15,19 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
-  // ── Leer body ──────────────────────────────────────────────
   const { nombres, apellidos, correo, telefono, mensaje } = req.body ?? {};
 
-  // ── Validar ────────────────────────────────────────────────
   const errors = [];
   if (!nombres?.trim())                          errors.push('Nombres requerido');
   if (!apellidos?.trim())                        errors.push('Apellidos requerido');
   if (!correo?.includes('@'))                    errors.push('Correo inválido');
-  if (!/^[\d\s\+\-\(\)]{7,20}$/.test(telefono))  errors.push('Teléfono inválido');
+  if (!/^[\d\s\+\-\(\)]{7,20}$/.test(telefono)) errors.push('Teléfono inválido');
   if (!mensaje?.trim())                          errors.push('Mensaje requerido');
 
   if (errors.length > 0) {
     return res.status(400).json({ success: false, error: 'validation', details: errors });
   }
 
-  // ── Normalizar ─────────────────────────────────────────────
   const data = {
     nombres:   nombres.trim().toUpperCase(),
     apellidos: apellidos.trim().toUpperCase(),
@@ -41,43 +36,39 @@ export default async function handler(req, res) {
     mensaje:   mensaje.trim(),
   };
 
-  // ── Leer variables de entorno ──────────────────────────────
-  const db_host = process.env.DB_HOST || 'ep-old-rain-anx76mf7-pooler.c-6.us-east-1.aws.neon.tech';
-  const db_port = process.env.DB_PORT || '5432';
-  const db_name = process.env.DB_NAME || 'maindb';
-  const db_user = process.env.DB_USER || 'neondb_owner';
-  const db_pass = process.env.DB_PASS || 'npg_5xpTMBZqg3sj';
+  // Limpiar saltos de línea y espacios de las variables de entorno
+  const db_host = (process.env.DB_HOST || '').trim().replace(/\n/g, '').replace(/\r/g, '');
+  const db_port = (process.env.DB_PORT || '5432').trim().replace(/\n/g, '').replace(/\r/g, '');
+  const db_name = (process.env.DB_NAME || '').trim().replace(/\n/g, '').replace(/\r/g, '');
+  const db_user = (process.env.DB_USER || '').trim().replace(/\n/g, '').replace(/\r/g, '');
+  const db_pass = (process.env.DB_PASS || '').trim().replace(/\n/g, '').replace(/\r/g, '');
 
   if (!db_host || !db_user || !db_pass || !db_name) {
     return res.status(500).json({
       success: false,
       error:   'db_config',
-      detail:  'Faltan variables de entorno. Verifica DB_HOST, DB_PORT, DB_NAME, DB_USER y DB_PASS en Vercel.',
+      detail:  'Faltan variables de entorno: DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS en Vercel.',
     });
   }
 
-  // ── Construir connection string para Neon ──────────────────
   const connectionString = `postgresql://${db_user}:${db_pass}@${db_host}:${db_port}/${db_name}?sslmode=require`;
-
   const sql = neon(connectionString);
 
-  // ── Crear tabla si no existe ───────────────────────────────
   try {
     await sql`
       CREATE TABLE IF NOT EXISTS Clientes_web (
         Id        SERIAL        PRIMARY KEY,
-        Nombres   VARCHAR(40)  NOT NULL,
-        Apellidos VARCHAR(40)  NOT NULL,
-        Correo    VARCHAR(60)  NOT NULL,
+        Nombres   VARCHAR(150)  NOT NULL,
+        Apellidos VARCHAR(150)  NOT NULL,
+        Correo    VARCHAR(254)  NOT NULL,
         Telefono  VARCHAR(20)   NOT NULL UNIQUE,
-        Mensaje   VARCHAR(1000)
+        Mensaje   VARCHAR(2000)
       )
     `;
   } catch (err) {
     console.error('[NEXUS] Create table:', err.message);
   }
 
-  // ── Verificar duplicado por teléfono ───────────────────────
   try {
     const existing = await sql`
       SELECT Id FROM Clientes_web WHERE Telefono = ${data.telefono} LIMIT 1
@@ -94,7 +85,6 @@ export default async function handler(req, res) {
     return res.status(500).json({ success: false, error: 'db_error', detail: err.message });
   }
 
-  // ── Insertar registro ──────────────────────────────────────
   try {
     const result = await sql`
       INSERT INTO Clientes_web (Nombres, Apellidos, Correo, Telefono, Mensaje)
@@ -117,4 +107,4 @@ export default async function handler(req, res) {
     }
     return res.status(500).json({ success: false, error: 'db_insert', detail: err.message });
   }
-}
+};
