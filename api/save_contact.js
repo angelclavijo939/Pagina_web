@@ -25,7 +25,7 @@ export default async function handler(req, res) {
   if (!nombres?.trim())                          errors.push('Nombres requerido');
   if (!apellidos?.trim())                        errors.push('Apellidos requerido');
   if (!correo?.includes('@'))                    errors.push('Correo inválido');
-  if (!/^[\d\s\+\-\(\)]{7,20}$/.test(telefono)) errors.push('Teléfono inválido');
+  if (!/^[\d\s\+\-\(\)]{7,20}$/.test(telefono))  errors.push('Teléfono inválido');
   if (!mensaje?.trim())                          errors.push('Mensaje requerido');
 
   if (errors.length > 0) {
@@ -42,11 +42,11 @@ export default async function handler(req, res) {
   };
 
   // ── Leer variables de entorno ──────────────────────────────
-  const db_host = process.env.DB_HOST || '';
+  const db_host = process.env.DB_HOST || 'ep-old-rain-anx76mf7-pooler.c-6.us-east-1.aws.neon.tech';
   const db_port = process.env.DB_PORT || '5432';
-  const db_name = process.env.DB_NAME || '';
-  const db_user = process.env.DB_USER || '';
-  const db_pass = process.env.DB_PASS || '';
+  const db_name = process.env.DB_NAME || 'maindb';
+  const db_user = process.env.DB_USER || 'neondb_owner';
+  const db_pass = process.env.DB_PASS || 'npg_jOgItXdAhu69';
 
   if (!db_host || !db_user || !db_pass || !db_name) {
     return res.status(500).json({
@@ -66,11 +66,11 @@ export default async function handler(req, res) {
     await sql`
       CREATE TABLE IF NOT EXISTS Clientes_web (
         Id        SERIAL        PRIMARY KEY,
-        Nombres   VARCHAR(150)  NOT NULL,
-        Apellidos VARCHAR(150)  NOT NULL,
-        Correo    VARCHAR(254)  NOT NULL,
+        Nombres   VARCHAR(40)  NOT NULL,
+        Apellidos VARCHAR(40)  NOT NULL,
+        Correo    VARCHAR(60)  NOT NULL,
         Telefono  VARCHAR(20)   NOT NULL UNIQUE,
-        Mensaje   VARCHAR(2000)
+        Mensaje   VARCHAR(1000)
       )
     `;
   } catch (err) {
