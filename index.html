@@ -313,7 +313,7 @@
         <div id="formSuccess" class="form-success">
           ✅ ¡Mensaje enviado con éxito! Te contactaremos pronto.
         </div>
-        <div id="contactForm">
+        <form id="contactForm" novalidate>
           <div class="form-row">
             <div class="form-group">
               <label for="nombres">Nombres *</label>
@@ -341,8 +341,8 @@
             <textarea id="mensaje" name="mensaje" placeholder="Cuéntanos sobre tu proyecto..."></textarea>
             <div class="form-msg" id="msg-mensaje">El mensaje es requerido.</div>
           </div>
-          <button type="button" class="btn-submit" id="btnSubmit">Enviar Mensaje →</button>
-        </div>
+          <button type="submit" class="btn-submit" id="btnSubmit">Enviar Mensaje →</button>
+        </form>
       </div>
     </div>
   </div>
